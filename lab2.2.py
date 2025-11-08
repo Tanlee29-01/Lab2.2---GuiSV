@@ -121,6 +121,9 @@ def main():
         print("11. Mượn sách")
         print("12. Trả sách")
         print("13. Hiển thị sách quá hạn (kèm người mượn)")
+        print("14. Tìm kiếm sách theo tên")
+        print("15. Xem lịch sử mượn sách")
+        print("16. Báo cáo sách đang được mượn")
         print("0.  Thoát")
         print("====================================")
 
@@ -214,7 +217,7 @@ def main():
             print(" b) Theo tên (từ khóa)")
             choice = input("Chọn kiểu tìm: ").strip().lower()
             if choice == "a":
-                member_id = int(input("Nhập ID: "))
+                member_id = get_safe_int_input("Nhập ID: ")
                 check_member_id = Member.search_by_id(db, member_id)
                 print(check_member_id if check_member_id else "Không thấy.")
             elif choice == "b":
@@ -227,31 +230,62 @@ def main():
         elif choice == "10":
             print_members(Member.get_all_members(db))
 
-        elif choice == "11":
-            member_id = get_integer_with_min_max("ID thành viên: ")
-            title = input("Tên sách (đúng chính tả): ").strip()
-            check_book_id = Book.search_by_title(db, title)
-            if not check_book_id:
-                print("Không tìm thấy sách.")
-                continue
+        elif choice == "11": 
+            member_id = get_safe_int_input("ID thành viên: ")
             
+
+            keyword = get_string_input("Nhập từ khóa tên sách cần mượn: ")
+            available_books = Book.search_available_by_title_like(db, keyword)
+            
+            if not available_books:
+                print("Không tìm thấy sách nào 'có sẵn' khớp với từ khóa.")
+                continue
+
+            print("== Các sách 'có sẵn' tìm thấy: ==")
+            valid_book_ids = [] 
+            for book in available_books:
+                print(f" - [{book.book_id}] {book.title} - {book.author}")
+                valid_book_ids.append(book.book_id)
+
+            book_id_to_borrow = get_safe_int_input("Nhập ID sách bạn muốn mượn: ")
+            
+
+            if book_id_to_borrow not in valid_book_ids:
+                print("Lỗi: ID sách không hợp lệ.")
+                continue
+                
+
             borrow_date = date.today()
             due_date = borrow_date + timedelta(days=14)
             try:
-                Borrowing(None, member_id, check_book_id.book_id, borrow_date, due_date).borrow_book(db)
+                Borrowing(None, member_id, book_id_to_borrow, borrow_date, due_date).borrow_book(db)
                 print(f"Mượn thành công. Hạn trả: {due_date:%Y-%m-%d}")
             except ValueError as Errorr:
                 print(Errorr)
 
         elif choice == "12":
-            member_id = get_integer_with_min_max("ID thành viên: ")
-            title = input("Tên sách (đúng chính tả): ").strip()
-            check_book_title = Book.search_by_title(db, title)
-            if not check_book_title:
-                print("Không tìm thấy sách.")
+            member_id = get_safe_int_input("ID thành viên: ")
+            borrowed_books = Borrowing.get_currently_borrowed_by_member(db, member_id)
+            
+            if not borrowed_books:
+                print("Thành viên này không có sách nào đang mượn.")
                 continue
+
+
+            print("== Các sách bạn đang mượn: ==")
+            valid_book_ids = [] 
+            for book_id, title, author in borrowed_books:
+                print(f" - [{book_id}] {title} - {author}")
+                valid_book_ids.append(book_id)
+
+            book_id_to_return = get_safe_int_input("Nhập ID sách bạn muốn trả: ")
+            
+            if book_id_to_return not in valid_book_ids:
+                print("Lỗi: Bạn không mượn sách có ID này.")
+                continue
+
             try:
-                Borrowing(None, member_id, check_book_title.book_id, None, None, return_date=date.today()).return_book(db)
+                Borrowing(None, member_id, book_id_to_return, None, None, return_date=date.today()).return_book(db)
                 print("Trả sách thành công.")
             except ValueError as e:
                 print("Lỗi", e)

@@ -37,6 +37,7 @@ class Book:
         
         query = "DELETE FROM books WHERE book_id = %s"
         db.execute_query(query,(self.book_id,))
+        
     # READ / SEARCH
     @staticmethod
     def get_all_books(db):
@@ -49,7 +50,7 @@ class Book:
         row = db.fetch_one(query, (book_id,))
         return Book(*row) if row else None
 
-    #Tìm sách với id
+    #Tìm sách với title
     @staticmethod
     def search_by_title(db, title):
         query = "SELECT * FROM books WHERE title=%s"
@@ -61,3 +62,9 @@ class Book:
     def set_status(db, book_id, status):
         query = "UPDATE books SET status=%s WHERE book_id=%s"
         db.execute_query(query, (status, book_id))
+
+    @staticmethod
+    def search_available_by_title_like(db,key_word):
+        query = "SELECT * FROM books WHERE title LIKE %s AND status = 0"
+        rows = db.fetch_all(query,(f"%{key_word}%",))
+        return [Book(*i) for i in rows]

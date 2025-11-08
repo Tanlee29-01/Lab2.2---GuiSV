@@ -64,3 +64,13 @@ class Borrowing:
             ORDER BY days_over DESC
         """
         return db.fetch_all(query, (today, today))
+    
+    @staticmethod
+    def get_currently_borrowed_by_member(db, member_id):
+        query = """
+            SELECT b.book_id, b.title, b.author
+            FROM borrowing bo
+            JOIN books b ON b.book_id = bo.book_id
+            WHERE bo.member_id = %s AND bo.return_date IS NULL
+        """
+        return db.fetch_all(query, (member_id,))

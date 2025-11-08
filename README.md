@@ -78,4 +78,18 @@ Lab2.2.py(choice 3)
             except ValueError as e:
                     print(f"Lỗi {e}")
 __________________________________________________________________________________
+
+Lab2.2.py(choice 9)
+elif choice == "9":
+            # ... (phần code 'a)' )
+            if choice == "a":
+                member_id = get_safe_int_input("Nhập ID: ") # SỬA Ở ĐÂY
+                check_member_id = Member.search_by_id(db, member_id)
+                print(check_member_id if check_member_id else "Không thấy.")
+            # ...
+______________________________________________________________________________________
+# 4. Nâng cấp choice 11(Mượn sách) và choice 12(Trả sách)
+______________________________________________________________________________________
+# 5. Thêm 3 chức năng 14(), 15, 16:
+
 ```
