@@ -18,6 +18,20 @@ class Member:
 
     # DELETE
     def delete_member(self, db):
+        # 1. KIỂM TRA MỚI: Kiểm tra xem thành viên có đang mượn sách không
+        check_query = """
+            SELECT 1 FROM borrowing 
+            WHERE member_id = %s AND return_date IS NULL 
+            LIMIT 1
+        """
+        # db.fetch_one sẽ trả về (1,) nếu tìm thấy, hoặc None nếu không
+        is_borrowing = db.fetch_one(check_query, (self.member_id,)) 
+        
+        if is_borrowing:
+            # Nếu tìm thấy (is_borrowing không phải là None), thì ném ra lỗi
+            raise ValueError("Không thể xóa. Thành viên này đang mượn sách.")
+        
+        # 2. Nếu không mượn sách, tiến hành xóa
         query = "DELETE FROM members WHERE member_id=%s"
         db.execute_query(query, (self.member_id,))
 

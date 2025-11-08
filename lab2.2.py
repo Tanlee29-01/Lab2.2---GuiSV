@@ -4,7 +4,88 @@ from member import Member
 from borrowing import Borrowing
 from datetime import date, timedelta
 
-#Hiển thị ds Book
+#Hàm trợ giúp để nhập chuỗi không rỗng
+def get_string_input(prompt, min_length=2):
+    """
+    Hiển thị 'prompt' và yêu cầu người dùng nhập.
+    Lặp lại cho đến khi người dùng nhập một chuỗi
+    1. Không rỗng
+    2. Có độ dài ít nhất min_length
+    3. Không chỉ chứa số
+    4. Phải bắt đầu bằng một chữ cái (THÊM MỚI)
+    """
+    while True:
+        user_input = input(prompt).strip()
+        
+        if not user_input: # 1. Kiểm tra rỗng
+            print("Lỗi: Thông tin này không được để trống. Vui lòng nhập lại.")
+            continue 
+
+        if len(user_input) < min_length: # 2. Kiểm tra độ dài tối thiểu
+            print(f"Lỗi: Phải có ít nhất {min_length} ký tự. Vui lòng nhập lại.")
+            continue 
+        
+        if user_input.isdigit(): # 3. Kiểm tra chỉ chứa số
+            print("Lỗi: Thông tin này không thể chỉ chứa số. Vui lòng nhập lại.")
+            continue
+            
+        # 4. KIỂM TRA MỚI: Ký tự đầu tiên phải là chữ cái
+        # (isalpha() hoạt động tốt với cả tiếng Việt có dấu)
+        if not user_input[0].isalpha():
+            print("Lỗi: Thông tin này phải bắt đầu bằng một chữ cái. Vui lòng nhập lại.")
+            continue
+
+        return user_input # Trả về nếu mọi thứ đều ổn
+
+#Hàm bổ trợ cho người dùng nhập int
+def get_safe_int_input(prompt):
+    while True:
+        user_input = input(prompt).strip()
+        try:
+            value = int(user_input)
+            return value
+        except ValueError:
+            print("Lỗi: vui lòng chỉ nhập một số nguyên.")
+
+# Thêm hàm này vào khu vực hàm trợ giúp
+def get_integer_in_range(prompt, valid_options):
+    """
+    Yêu cầu người dùng nhập một số nguyên cho đến khi
+    số đó nằm trong 'valid_options' (một list).
+    """
+    while True:
+        # Dùng lại hàm get_safe_int_input bạn đã viết
+        value = get_safe_int_input(prompt) 
+        
+        if value in valid_options:
+            return value # Trả về nếu số nằm trong danh sách
+        else:
+            # Số hợp lệ, nhưng không nằm trong phạm vi
+            print(f"Lỗi: Vui lòng chỉ chọn một trong các giá trị: {valid_options}")
+
+
+def get_integer_with_min_max(prompt, min_val=None, max_val=None):
+    """
+    Hiển thị 'prompt' và yêu cầu người dùng nhập một số nguyên.
+    Lặp lại cho đến khi số đó nằm trong khoảng [min_val, max_val].
+    """
+    while True:
+        # Chúng ta dùng lại hàm get_integer_input cũ để lấy số
+        value = get_safe_int_input(prompt) 
+        
+        # Kiểm tra giới hạn dưới
+        if min_val is not None and value < min_val:
+            print(f"Lỗi: Giá trị phải lớn hơn hoặc bằng {min_val}.")
+            continue # Yêu cầu nhập lại
+
+        # Kiểm tra giới hạn trên
+        if max_val is not None and value > max_val:
+            print(f"Lỗi: Giá trị phải nhỏ hơn hoặc bằng {max_val}.")
+            continue # Yêu cầu nhập lại
+        
+        return value 
+
+#Hiển thị ds Boo
 def print_books(books):
     if not books:
         print("Không có sách phù hợp.")
@@ -23,6 +104,7 @@ def print_members(members):
 
 def main():
     db = Database()
+
     while True:
         print("==============Menu===============")
         print("HỆ THỐNG QUẢN LÝ THƯ VIỆN")
@@ -45,12 +127,13 @@ def main():
         choice = input("Chọn chức năng: ").strip()
 
         if choice == "1":
-            title = input("Tên sách: ").strip()
-            author = input("Tác giả: ").strip()
-            pages = int(input("Số trang: "))
-            year = int(input("Năm xuất bản: "))
-            category = input("Chủng loại: ").strip()
-            status = int(input("Trạng thái (0: có sẵn, 1: đã mượn, 2: khác): "))
+            title = get_string_input("Tên sách: ").strip()
+            author = get_string_input("Tác giả: ").strip()
+            pages = get_integer_with_min_max("Số trang: ",min_val= 10)#Change 03/11/2025
+            current_year = date.today().year
+            year = get_integer_with_min_max("Năm xuất bản: ",min_val=1500,max_val=current_year)#Change 03/11/2025
+            category = get_string_input("Chủng loại: ")
+            status = get_integer_in_range("Trạng thái (0: có sẵn, 1: đã mượn, 2: khác): ",[0,1,2])#change 03/11/2025
             Book(None, title, author, pages, year, status, category).add_book(db)
             print("Đã thêm sách.")
 
@@ -61,17 +144,17 @@ def main():
                 print("Không tìm thấy sách.")
             else:
                 print("Hiện tại:", check_book_id)
-                title = input("Tên mới: ")
-                author = input("Tác giả mới: ")
-                pages = int(input("Số trang mới: "))
-                year = int(input("Năm XB mới: "))
-                status = int(input("Trạng thái mới (0/1/2): "))
-                category = input("Chủng loại mới: ")
+                title = get_string_input("Tên mới: ")
+                author = get_string_input("Tác giả mới: ")
+                pages = get_integer_with_min_max("Số trang mới: ",min_val=100)
+                year = get_integer_with_min_max("Năm XB mới: ",min_val=1500,max_val=current_year)
+                status = get_integer_in_range("Trạng thái mới (0/1/2): ",[0,1,2])
+                category = get_string_input("Chủng loại mới: ")
                 Book(book_id, title, author, pages, year, status, category).update_book(db)
                 print("Đã cập nhật.")
 
         elif choice == "3":
-            book_id = int(input("ID sách cần xóa: "))
+            book_id = get_integer_with_min_max("ID sách cần xóa: ")
             check_book_id = Book.search_by_id(db, book_id)
             if not check_book_id:
                 print("Không tìm thấy sách.")
@@ -84,7 +167,7 @@ def main():
             print(" b) Theo tiêu đề")
             choice = input("Chọn kiểu tìm: ").strip().lower()
             if choice == "a":
-                book_id = int(input("Nhập ID: "))
+                book_id = get_integer_with_min_max("Nhập ID: ")
                 check_book_id = Book.search_by_id(db, book_id)
                 print(check_book_id if check_book_id else "Không thấy.")
             elif choice == "b":
@@ -98,23 +181,23 @@ def main():
             print_books(Book.get_all_books(db))
 
         elif choice == "6":
-            name = input("Tên thành viên: ").strip()
+            name = get_string_input("Tên thành viên: ").strip()
             Member(None, name).add_member(db)
             print("Đã thêm thành viên.")
 
         elif choice == "7":
-            member_id = int(input("ID thành viên cần sửa: "))
+            member_id = get_integer_with_min_max("ID thành viên cần sửa: ")
             check_member_id = Member.search_by_id(db, member_id)
             if not check_member_id:
                 print("Không tìm thấy thành viên.")
             else:
                 print("Hiện tại:", check_member_id)
-                new_name = input("Tên mới: ").strip()
+                new_name = get_string_input("Tên mới: ")
                 Member(member_id, new_name).update_member_info(db)
                 print("Đã cập nhật.")
 
         elif choice == "8":
-            member_id = int(input("ID thành viên cần xóa: "))
+            member_id = get_integer_with_min_max("ID thành viên cần xóa: ")
             check_member_id = Member.search_by_id(db, member_id)
             if not check_member_id:
                 print("Không tìm thấy thành viên.")
@@ -141,7 +224,7 @@ def main():
             print_members(Member.get_all_members(db))
 
         elif choice == "11":
-            member_id = int(input("ID thành viên: "))
+            member_id = get_integer_with_min_max("ID thành viên: ")
             title = input("Tên sách (đúng chính tả): ").strip()
             check_book_id = Book.search_by_title(db, title)
             if not check_book_id:
@@ -157,7 +240,7 @@ def main():
                 print(Errorr)
 
         elif choice == "12":
-            member_id = int(input("ID thành viên: "))
+            member_id = get_integer_with_min_max("ID thành viên: ")
             title = input("Tên sách (đúng chính tả): ").strip()
             check_book_title = Book.search_by_title(db, title)
             if not check_book_title:
@@ -181,6 +264,9 @@ def main():
         elif choice == "0":
             print("Tạm biệt")
             break
+
+        else:
+            print(f"Vẫn chưa chưa có chức năng {choice}. Vui lòng nhập lại")
 
 if __name__ == "__main__":
     main()
