@@ -17,6 +17,7 @@ def get_safe_input(prompt):
 # 2. Gặp 1 số lỗi: 
       2.1 Input số hết thì chức năng thêm sách vẫn nhận(Output rác)
       2.2 Input string nhập rác vẫn nhận
+      => Đã xử lý xong
 
 # 3. 11/08/2025 Fix logic của book.py và member.py
 ```bash
