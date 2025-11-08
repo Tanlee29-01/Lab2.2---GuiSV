@@ -165,17 +165,18 @@ def main():
         elif choice == "4":
             print(" a) Theo ID")
             print(" b) Theo tiêu đề")
-            choice = input("Chọn kiểu tìm: ").strip().lower()
-            if choice == "a":
-                book_id = get_integer_with_min_max("Nhập ID: ")
-                check_book_id = Book.search_by_id(db, book_id)
-                print(check_book_id if check_book_id else "Không thấy.")
-            elif choice == "b":
-                title = input("Nhập tiêu đề chính xác: ").strip()
-                check_book_id = Book.search_by_title(db, title)
-                print(check_book_id if check_book_id else "Không thấy.")
-            else:
-                print("Lựa chọn không hợp lệ.")
+            try:
+                choice = input("Chọn kiểu tìm: ").strip().lower()
+                if choice == "a":
+                    book_id = get_integer_with_min_max("Nhập ID: ")
+                    check_book_id = Book.search_by_id(db, book_id)
+                    print(check_book_id if check_book_id else "Không thấy.")
+                elif choice == "b":
+                    title = input("Nhập tiêu đề chính xác: ").strip()
+                    check_book_id = Book.search_by_title(db, title)
+                    print(check_book_id if check_book_id else "Không thấy.")
+            except ValueError:
+                    print("Lựa chọn không hợp lệ. Vui lòng nhập lại")
 
         elif choice == "5":
             print_books(Book.get_all_books(db))
