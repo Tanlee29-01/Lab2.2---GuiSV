@@ -154,29 +154,29 @@ def main():
                 print("Đã cập nhật.")
 
         elif choice == "3":
-            book_id = get_integer_with_min_max("ID sách cần xóa: ")
+            book_id = get_safe_int_input("ID sách cần xóa: ")
             check_book_id = Book.search_by_id(db, book_id)
-            if not check_book_id:
-                print("Không tìm thấy sách.")
-            else:
-                Book(book_id, None, None, None, None, None, None).delete_book(db)
+            try:
+                book_to_delete = Book(book_id, None, None, None, None, None, None)
+                book_to_delete.delete_book(db)
                 print("Đã xóa sách.")
-
+            except ValueError as e:
+                    print(f"Lỗi {e}")
+                    
         elif choice == "4":
             print(" a) Theo ID")
             print(" b) Theo tiêu đề")
-            try:
-                choice = input("Chọn kiểu tìm: ").strip().lower()
-                if choice == "a":
-                    book_id = get_integer_with_min_max("Nhập ID: ")
-                    check_book_id = Book.search_by_id(db, book_id)
-                    print(check_book_id if check_book_id else "Không thấy.")
-                elif choice == "b":
-                    title = input("Nhập tiêu đề chính xác: ").strip()
-                    check_book_id = Book.search_by_title(db, title)
-                    print(check_book_id if check_book_id else "Không thấy.")
-            except ValueError:
-                    print("Lựa chọn không hợp lệ. Vui lòng nhập lại")
+            choice = input("Chọn kiểu tìm: ").strip().lower()
+            if choice == "a":
+                book_id = get_integer_with_min_max("Nhập ID: ")
+                check_book_id = Book.search_by_id(db, book_id)
+                print(check_book_id if check_book_id else "Không thấy.")
+            elif choice == "b":
+                title = input("Nhập tiêu đề chính xác: ").strip()
+                check_book_id = Book.search_by_title(db, title)
+                print(check_book_id if check_book_id else "Không thấy.")
+            else:
+                print("Lựa chọn không hợp lệ.")
 
         elif choice == "5":
             print_books(Book.get_all_books(db))
@@ -203,8 +203,11 @@ def main():
             if not check_member_id:
                 print("Không tìm thấy thành viên.")
             else:
-                Member(member_id, None).delete_member(db)
-                print("Đã xóa thành viên.")
+                try:
+                    Member(member_id, None).delete_member(db)
+                    print("Đã xóa thành viên.")
+                except ValueError as e:
+                    print(f"Lỗi{e}")
 
         elif choice == "9":
             print(" a) Theo ID")
