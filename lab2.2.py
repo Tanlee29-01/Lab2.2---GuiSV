@@ -108,15 +108,15 @@ def main():
     while True:
         print("==============Menu===============")
         print("HỆ THỐNG QUẢN LÝ THƯ VIỆN")
-        print("1.  Thêm sách")
-        print("2.  Sửa thông tin sách")
-        print("3.  Xóa sách")
-        print("4.  Tìm kiếm sách")
-        print("5.  Hiển thị tất cả sách")
-        print("6.  Thêm thành viên")
-        print("7.  Sửa thông tin thành viên")
-        print("8.  Xóa thành viên")
-        print("9.  Tìm kiếm thành viên")
+        print("1. Thêm sách")
+        print("2. Sửa thông tin sách")
+        print("3. Xóa sách")
+        print("4. Tìm kiếm sách")
+        print("5. Hiển thị tất cả sách")
+        print("6. Thêm thành viên")
+        print("7. Sửa thông tin thành viên")
+        print("8. Xóa thành viên")
+        print("9. Tìm kiếm thành viên")
         print("10. Hiển thị tất cả thành viên")
         print("11. Mượn sách")
         print("12. Trả sách")
@@ -124,7 +124,7 @@ def main():
         print("14. Tìm kiếm sách theo tên")
         print("15. Xem lịch sử mượn sách")
         print("16. Báo cáo sách đang được mượn")
-        print("0.  Thoát")
+        print("0. Thoát")
         print("====================================")
 
         choice = input("Chọn chức năng: ").strip()
@@ -233,7 +233,6 @@ def main():
         elif choice == "11": 
             member_id = get_safe_int_input("ID thành viên: ")
             
-
             keyword = get_string_input("Nhập từ khóa tên sách cần mượn: ")
             available_books = Book.search_available_by_title_like(db, keyword)
             
