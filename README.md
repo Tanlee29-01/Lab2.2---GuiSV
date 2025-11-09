@@ -1,6 +1,3 @@
-Chào bạn, đây là một file `README.md` tổng hợp toàn bộ dự án của chúng ta, giải thích tất cả các tính năng, các hàm bổ trợ và quan trọng nhất là "tại sao" chúng ta lại làm như vậy.
-
-Bạn có thể sao chép và dán nội dung dưới đây vào một file mới tên là `README.md` trong thư mục dự án của bạn.
 
 ---
 
