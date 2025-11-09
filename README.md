@@ -1,231 +1,67 @@
-# 03/11/2025
-# 1. Xây dụng đầu vào chặt chẽ:
-```bash
-______________________________________________________________________________________
-Lab2.2.py
-#Hàm trợ giúp để nhập chuỗi không rỗng
-def get_string_input(prompt, min_length=2):
-    """
-    Hiển thị 'prompt' và yêu cầu người dùng nhập.
-    Lặp lại cho đến khi người dùng nhập một chuỗi
-    1. Không rỗng
-    2. Có độ dài ít nhất min_length
-    3. Không chỉ chứa số
-    4. Phải bắt đầu bằng một chữ cái (THÊM MỚI)
-    """
-    while True:
-        user_input = input(prompt).strip()
-        
-        if not user_input: # 1. Kiểm tra rỗng
-            print("Lỗi: Thông tin này không được để trống. Vui lòng nhập lại.")
-            continue 
+Chào bạn, đây là một file `README.md` tổng hợp toàn bộ dự án của chúng ta, giải thích tất cả các tính năng, các hàm bổ trợ và quan trọng nhất là "tại sao" chúng ta lại làm như vậy.
 
-        if len(user_input) < min_length: # 2. Kiểm tra độ dài tối thiểu
-            print(f"Lỗi: Phải có ít nhất {min_length} ký tự. Vui lòng nhập lại.")
-            continue 
-        
-        if user_input.isdigit(): # 3. Kiểm tra chỉ chứa số
-            print("Lỗi: Thông tin này không thể chỉ chứa số. Vui lòng nhập lại.")
-            continue
-            
-        # 4. KIỂM TRA MỚI: Ký tự đầu tiên phải là chữ cái
-        # (isalpha() hoạt động tốt với cả tiếng Việt có dấu)
-        if not user_input[0].isalpha():
-            print("Lỗi: Thông tin này phải bắt đầu bằng một chữ cái. Vui lòng nhập lại.")
-            continue
+Bạn có thể sao chép và dán nội dung dưới đây vào một file mới tên là `README.md` trong thư mục dự án của bạn.
 
-        return user_input # Trả về nếu mọi thứ đều ổn
+---
 
-#Hàm bổ trợ cho người dùng nhập int
-def get_safe_int_input(prompt):
-    while True:
-        user_input = input(prompt).strip()
-        try:
-            value = int(user_input)
-            return value
-        except ValueError:
-            print("Lỗi: vui lòng chỉ nhập một số nguyên.")
+# 📖 Hệ thống Quản lý Thư viện (Console Application)
 
-# Thêm hàm này vào khu vực hàm trợ giúp
-def get_integer_in_range(prompt, valid_options):
-    """
-    Yêu cầu người dùng nhập một số nguyên cho đến khi
-    số đó nằm trong 'valid_options' (một list).
-    """
-    while True:
-        # Dùng lại hàm get_safe_int_input bạn đã viết
-        value = get_safe_int_input(prompt) 
-        
-        if value in valid_options:
-            return value # Trả về nếu số nằm trong danh sách
-        else:
-            # Số hợp lệ, nhưng không nằm trong phạm vi
-            print(f"Lỗi: Vui lòng chỉ chọn một trong các giá trị: {valid_options}")
+Đây là một dự án ứng dụng console bằng Python để quản lý một hệ thống thư viện cơ bản. Dự án này bao gồm các chức năng cốt lõi như quản lý Sách, Thành viên và các giao dịch Mượn/Trả sách, đồng thời tập trung mạnh vào việc **xác thực dữ liệu** và đảm bảo **logic nghiệp vụ** vững chắc.
 
+## ✨ Các Tính năng Chính
 
-def get_integer_with_min_max(prompt, min_val=None, max_val=None):
-    """
-    Hiển thị 'prompt' và yêu cầu người dùng nhập một số nguyên.
-    Lặp lại cho đến khi số đó nằm trong khoảng [min_val, max_val].
-    """
-    while True:
-        # Chúng ta dùng lại hàm get_integer_input cũ để lấy số
-        value = get_safe_int_input(prompt) 
-        
-        # Kiểm tra giới hạn dưới
-        if min_val is not None and value < min_val:
-            print(f"Lỗi: Giá trị phải lớn hơn hoặc bằng {min_val}.")
-            continue # Yêu cầu nhập lại
+Hệ thống cung cấp 15 chức năng chính, được chia thành 3 nhóm:
 
-        # Kiểm tra giới hạn trên
-        if max_val is not None and value > max_val:
-            print(f"Lỗi: Giá trị phải nhỏ hơn hoặc bằng {max_val}.")
-            continue # Yêu cầu nhập lại
-        
-        return value 
-______________________________________________________________________________________
-```
-# 2. Gặp 1 số lỗi: 
-      2.1 Input số hết thì chức năng thêm sách vẫn nhận(Output rác)
-      2.2 Input string nhập rác vẫn nhận
-    => Đã xử lý xong 08/11/2025✅
+### 1. Quản lý Sách (Book)
+* **1. Thêm sách:** Thêm một cuốn sách mới vào cơ sở dữ liệu.
+* **2. Sửa thông tin sách:** Cập nhật chi tiết của một cuốn sách (dựa trên ID).
+* **3. Xóa sách:** Xóa một cuốn sách khỏi cơ sở dữ liệu (dựa trên ID).
+* **4. Tìm kiếm sách:** Tìm sách theo ID, Tiêu đề chính xác, hoặc Từ khóa (LIKE).
+* **5. Hiển thị tất cả sách:** Liệt kê toàn bộ sách trong thư viện.
 
-# 3. 11/08/2025 Fix logic của book.py và member.py:
-```bash
-__________________________________________________________________________________
-member.py
-    # DELETE
-    def delete_member(self, db):
-        # 1. KIỂM TRA MỚI: Kiểm tra xem thành viên có đang mượn sách không
-        check_query = """
-            SELECT 1 FROM borrowing 
-            WHERE member_id = %s AND return_date IS NULL 
-            LIMIT 1
-        """
+### 2. Quản lý Thành viên (Member)
+* **6. Thêm thành viên:** Thêm thành viên mới.
+* **7. Sửa thông tin thành viên:** Cập nhật tên thành viên (dựa trên ID).
+* **8. Xóa thành viên:** Xóa một thành viên (dựa trên ID).
+* **9. Tìm kiếm thành viên:** Tìm thành viên theo ID hoặc Tên (LIKE).
+* **10. Hiển thị tất cả thành viên:** Liệt kê toàn bộ thành viên.
 
-        is_borrowing = db.fetch_one(check_query, (self.member_id,)) 
-        if is_borrowing:
-            raise ValueError("Không thể xóa. Thành viên này đang mượn sách.")
-        
-        query = "DELETE FROM members WHERE member_id=%s"
-        db.execute_query(query, (self.member_id,))
+### 3. Quản lý Mượn/Trả (Borrowing)
+* **11. Mượn sách:** Quy trình mượn sách thân thiện với người dùng (Tìm theo tên, Mượn bằng ID).
+* **12. Trả sách:** Quy trình trả sách thông minh (Hiển thị sách đang mượn, Trả bằng ID).
+* **13. Hiển thị sách quá hạn:** Báo cáo các sách đã quá hạn trả (kèm người mượn).
+* **14. Xem lịch sử mượn của thành viên:** Xem toàn bộ lịch sử (đã trả và đang mượn) của một thành viên.
+* **15. Báo cáo sách đang được mượn:** Báo cáo *tất cả* các sách đang lưu hành (chưa trả).
 
-Lab2.2.py(choice 8)
+---
 
-        elif choice == "8":
-            member_id = get_integer_with_min_max("ID thành viên cần xóa: ")
-            check_member_id = Member.search_by_id(db, member_id)
-            if not check_member_id:
-                print("Không tìm thấy thành viên.")
-            else:
-                try:
-                    Member(member_id, None).delete_member(db)
-                    print("Đã xóa thành viên.")
-                except ValueError as e:
-                    print(f"Lỗi{e}")
-__________________________________________________________________________________
-book.py
- # DELETE
-    def delete_book(self, db):
-        checK_query = "DELETE FROM books WHERE book_id=%s"
-        row = db.execute_query(checK_query, (self.book_id,))
-        
-        if not row:
-            raise ValueError("Sách không tồn tại để xóa")
-        
-        if row[0] == 1:
-            raise ValueError("Không thể xóa. Sách này đang được mượn.")
-        
-        query = "DELETE FROM books WHERE book_id = %s"
-        db.execute_query(query,(self.book_id,))
+## 🛠️ Các Hàm Bổ Trợ & Logic Cải Tiến
 
-Lab2.2.py(choice 3)
-        elif choice == "3":
-            book_id = get_safe_int_input("ID sách cần xóa: ")
-            check_book_id = Book.search_by_id(db, book_id)
-            try:
-                book_to_delete = Book(book_id, None, None, None, None, None, None)
-                book_to_delete.delete_book(db)
-                print("Đã xóa sách.")
-            except ValueError as e:
-                    print(f"Lỗi {e}")
-__________________________________________________________________________________
+Phần quan trọng nhất của dự án này là cách chúng ta xử lý đầu vào của người dùng và các quy tắc nghiệp vụ.
 
-Lab2.2.py(choice 9)
-elif choice == "9":
-            # ... (phần code 'a)' )
-            if choice == "a":
-                member_id = get_safe_int_input("Nhập ID: ") # SỬA Ở ĐÂY
-                check_member_id = Member.search_by_id(db, member_id)
-                print(check_member_id if check_member_id else "Không thấy.")
-            # ...
-______________________________________________________________________________________
-```
-# 4. Nâng cấp choice 11(Mượn sách) và choice 12(Trả sách) 08/11/2025:
-```bash
-elif choice == "11": 
-            member_id = get_safe_int_input("ID thành viên: ")
-            
-            keyword = get_string_input("Nhập từ khóa tên sách cần mượn: ")
-            available_books = Book.search_available_by_title_like(db, keyword)
-            
-            if not available_books:
-                print("Không tìm thấy sách nào 'có sẵn' khớp với từ khóa.")
-                continue
+### 1. Tại sao chúng ta xây dựng các hàm bổ trợ?
 
-            print("== Các sách 'có sẵn' tìm thấy: ==")
-            valid_book_ids = [] 
-            for book in available_books:
-                print(f" - [{book.book_id}] {book.title} - {book.author}")
-                valid_book_ids.append(book.book_id)
+Ban đầu, chúng ta dùng `input()` và `int()` trực tiếp.
 
-            book_id_to_borrow = get_safe_int_input("Nhập ID sách bạn muốn mượn: ")
-            
+* **Vấn đề:** Điều này gây ra 2 lỗi nghiêm trọng:
+    1.  **Crash chương trình:** Nếu người dùng nhập chữ (ví dụ: "abc") khi chương trình mong đợi số (`int(input())`), chương trình sẽ dừng đột ngột với lỗi `ValueError`.
+    2.  **Dữ liệu "rác":** Nếu người dùng chỉ nhấn Enter (chuỗi rỗng) hoặc nhập dữ liệu phi logic (ví dụ: `Tên sách: "1"`, `Năm xuất bản: 12345`), CSDL của chúng ta sẽ bị ô nhiễm.
+* **Giải pháp:** Chúng ta đã xây dựng một bộ 4 hàm "trợ giúp" để "bọc thép" đầu vào:
+    * `get_safe_int_input(prompt)`: Đảm bảo người dùng chỉ có thể nhập số nguyên. **Giải quyết: Lỗi `ValueError` khi crash.**
+    * `get_string_input(prompt, min_length=2)`: Đảm bảo đầu vào là chuỗi, không rỗng, có độ dài tối thiểu, không chỉ chứa số, và phải bắt đầu bằng chữ cái. **Giải quyết: Dữ liệu "rác" như "123", "a", "" (rỗng).**
+    * `get_integer_in_range(prompt, valid_options)`: Đảm bảo số nhập vào phải nằm trong một danh sách cụ thể. **Giải quyết: Nhập `status = 5` (chỉ cho phép `[0, 1, 2]`).**
+    * `get_integer_with_min_max(prompt, min_val, max_val)`: Đảm bảo số nhập vào phải nằm trong một khoảng. **Giải quyết: Nhập `Năm xuất bản: 1` (chỉ cho phép từ 1500 - năm hiện tại).**
 
-            if book_id_to_borrow not in valid_book_ids:
-                print("Lỗi: ID sách không hợp lệ.")
-                continue
-                
+### 2. Tại sao chúng ta sửa logic nghiệp vụ?
 
-            borrow_date = date.today()
-            due_date = borrow_date + timedelta(days=14)
-            try:
-                Borrowing(None, member_id, book_id_to_borrow, borrow_date, due_date).borrow_book(db)
-                print(f"Mượn thành công. Hạn trả: {due_date:%Y-%m-%d}")
-            except ValueError as Errorr:
-                print(Errorr)
-______________________________________________________________________________________
-        elif choice == "12":
-            member_id = get_safe_int_input("ID thành viên: ")
-            borrowed_books = Borrowing.get_currently_borrowed_by_member(db, member_id)
-            
-            if not borrowed_books:
-                print("Thành viên này không có sách nào đang mượn.")
-                continue
+Một hệ thống backend "chắc" không chỉ là về đầu vào, mà còn là về các quy tắc.
 
+* **Vấn đề (Xóa):** Ban đầu, chúng ta có thể xóa một thành viên đang mượn sách, hoặc xóa một cuốn sách đang được mượn.
+* **Tại sao đây là lỗi:** Điều này làm hỏng tính toàn vẹn CSDL (lỗi khóa ngoại, dữ liệu "mồ côi").
+* **Giải pháp:** Chúng ta đã cập nhật hàm `delete_member()` và `delete_book()`. Giờ đây, các hàm này sẽ kiểm tra (`SELECT`) trạng thái (sách đang mượn `status=1` hoặc thành viên có `return_date IS NULL`) *trước khi* thực hiện `DELETE`. Nếu vi phạm, chúng sẽ ném ra `ValueError` và `lab2.2.py` sẽ bắt lỗi này lại, hiển thị thông báo thân thiện cho người dùng.
 
-            print("== Các sách bạn đang mượn: ==")
-            valid_book_ids = [] 
-            for book_id, title, author in borrowed_books:
-                print(f" - [{book_id}] {title} - {author}")
-                valid_book_ids.append(book_id)
-
-            book_id_to_return = get_safe_int_input("Nhập ID sách bạn muốn trả: ")
-            
-            if book_id_to_return not in valid_book_ids:
-                print("Lỗi: Bạn không mượn sách có ID này.")
-                continue
-
-            try:
-                Borrowing(None, member_id, book_id_to_return, None, None, return_date=date.today()).return_book(db)
-                print("Trả sách thành công.")
-            except ValueError as e:
-                print("Lỗi", e)
-```
-______________________________________________________________________________________
-# 5. Thêm 3 chức năng 14, 15, 16 09/11/2025:
-```bash
-- 14. Tìm kiếm sách theo tên
-- 15. Xem lịch sử mượn sách
-- 16. Báo cáo sách đang được mượn
-```
+* **Vấn đề (Mượn/Trả):** Ban đầu, chúng ta yêu cầu người dùng nhập Tên sách chính xác để mượn/trả.
+* **Tại sao đây là lỗi:** Người dùng không thể nhớ tên chính xác, và tệ hơn, nếu có 2 sách cùng tên, logic sẽ bị sai. Mặt khác, yêu cầu người dùng nhập `book_id` (như mentor đề xuất ban đầu) thì lại không thân thiện.
+* **Giải pháp (Tìm bằng Tên, Thực thi bằng ID):** Chúng ta đã tạo ra logic tốt nhất:
+    * **Mượn (11):** Người dùng nhập *từ khóa* (`LIKE`) -> Hệ thống chỉ hiển thị sách *có sẵn* (`status=0`) -> Người dùng chọn `book_id` từ danh sách đó.
+    * **Trả (12):** Người dùng nhập `member_id` -> Hệ thống hiển thị *chỉ* các sách thành viên đó *đang mượn* (`return_date IS NULL`) -> Người dùng chọn `book_id` từ danh sách đó.
