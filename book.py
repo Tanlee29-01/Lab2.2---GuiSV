@@ -26,7 +26,7 @@ class Book:
 
     # DELETE
     def delete_book(self, db):
-        checK_query = "DELETE FROM books WHERE book_id=%s"
+        checK_query = "SELECT FROM books WHERE book_id=%s"
         row = db.fetch_one(checK_query, (self.book_id,))
         
         if not row:
