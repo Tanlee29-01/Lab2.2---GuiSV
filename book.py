@@ -26,8 +26,8 @@ class Book:
 
     # DELETE
     def delete_book(self, db):
-        checK_query = "DELETE FROM books WHERE book_id=%s"
-        row = db.execute_query(checK_query, (self.book_id,))
+        checK_query = "SELECT FROM books WHERE book_id=%s"
+        row = db.fetch_one(checK_query, (self.book_id,))
         
         if not row:
             raise ValueError("Sách không tồn tại để xóa")
@@ -63,8 +63,17 @@ class Book:
         query = "UPDATE books SET status=%s WHERE book_id=%s"
         db.execute_query(query, (status, book_id))
 
+    #Tìm kiếm sách theo từ khóa và trạng thái = 0
     @staticmethod
     def search_available_by_title_like(db,key_word):
         query = "SELECT * FROM books WHERE title LIKE %s AND status = 0"
         rows = db.fetch_all(query,(f"%{key_word}%",))
         return [Book(*i) for i in rows]
+
+    #Tìm kiếm theo từ khóa
+    @staticmethod
+    def search_by_title_like(db,key_word):
+        query = "SELECT * FROM books WHERE title LIKE %s"
+        rows = db.fetch_all(query,(f"%{key_word}%",))
+        return [Book(*i) for i in rows]
+    

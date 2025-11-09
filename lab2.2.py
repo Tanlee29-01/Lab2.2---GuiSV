@@ -108,23 +108,22 @@ def main():
     while True:
         print("==============Menu===============")
         print("HỆ THỐNG QUẢN LÝ THƯ VIỆN")
-        print("1.  Thêm sách")
-        print("2.  Sửa thông tin sách")
-        print("3.  Xóa sách")
-        print("4.  Tìm kiếm sách")
-        print("5.  Hiển thị tất cả sách")
-        print("6.  Thêm thành viên")
-        print("7.  Sửa thông tin thành viên")
-        print("8.  Xóa thành viên")
-        print("9.  Tìm kiếm thành viên")
+        print("1. Thêm sách")
+        print("2. Sửa thông tin sách")
+        print("3. Xóa sách")
+        print("4. Tìm kiếm sách")
+        print("5. Hiển thị tất cả sách")
+        print("6. Thêm thành viên")
+        print("7. Sửa thông tin thành viên")
+        print("8. Xóa thành viên")
+        print("9. Tìm kiếm thành viên")
         print("10. Hiển thị tất cả thành viên")
         print("11. Mượn sách")
         print("12. Trả sách")
         print("13. Hiển thị sách quá hạn (kèm người mượn)")
-        print("14. Tìm kiếm sách theo tên")
-        print("15. Xem lịch sử mượn sách")
-        print("16. Báo cáo sách đang được mượn")
-        print("0.  Thoát")
+        print("14. Xem lịch sử mượn của thành viên")
+        print("15. Báo cáo sách đang được mượn")
+        print("0. Thoát")
         print("====================================")
 
         choice = input("Chọn chức năng: ").strip()
@@ -141,7 +140,7 @@ def main():
             print("Đã thêm sách.")
 
         elif choice == "2":
-            book_id = int(input("ID sách cần sửa: "))
+            book_id = get_safe_int_input("ID sách cần sửa: ")
             check_book_id = Book.search_by_id(db, book_id)
             if not check_book_id:
                 print("Không tìm thấy sách.")
@@ -169,15 +168,20 @@ def main():
         elif choice == "4":
             print(" a) Theo ID")
             print(" b) Theo tiêu đề")
+            print(" c) Theo từ khóa")
             choice = input("Chọn kiểu tìm: ").strip().lower()
             if choice == "a":
-                book_id = get_integer_with_min_max("Nhập ID: ")
+                book_id = get_safe_int_input("Nhập ID: ")
                 check_book_id = Book.search_by_id(db, book_id)
                 print(check_book_id if check_book_id else "Không thấy.")
             elif choice == "b":
-                title = input("Nhập tiêu đề chính xác: ").strip()
+                title = get_string_input("Nhập tiêu đề chính xác: ").strip()
                 check_book_id = Book.search_by_title(db, title)
                 print(check_book_id if check_book_id else "Không thấy.")
+            elif choice == "c":
+                key_word = get_string_input("Nhập từ khóa sách: ")
+                books_found = Book.search_by_title_like(db,key_word)
+                print_books(books_found)
             else:
                 print("Lựa chọn không hợp lệ.")
 
@@ -190,7 +194,7 @@ def main():
             print("Đã thêm thành viên.")
 
         elif choice == "7":
-            member_id = get_integer_with_min_max("ID thành viên cần sửa: ")
+            member_id = get_safe_int_input("ID thành viên cần sửa: ")
             check_member_id = Member.search_by_id(db, member_id)
             if not check_member_id:
                 print("Không tìm thấy thành viên.")
@@ -201,7 +205,7 @@ def main():
                 print("Đã cập nhật.")
 
         elif choice == "8":
-            member_id = get_integer_with_min_max("ID thành viên cần xóa: ")
+            member_id = get_safe_int_input("ID thành viên cần xóa: ")
             check_member_id = Member.search_by_id(db, member_id)
             if not check_member_id:
                 print("Không tìm thấy thành viên.")
@@ -214,14 +218,14 @@ def main():
 
         elif choice == "9":
             print(" a) Theo ID")
-            print(" b) Theo tên (từ khóa)")
+            print(" b) Theo tên")
             choice = input("Chọn kiểu tìm: ").strip().lower()
             if choice == "a":
                 member_id = get_safe_int_input("Nhập ID: ")
                 check_member_id = Member.search_by_id(db, member_id)
                 print(check_member_id if check_member_id else "Không thấy.")
             elif choice == "b":
-                key_word = input("Nhập từ khóa tên: ").strip()
+                key_word = get_string_input("Nhập từ khóa tên: ").strip()
                 check_member_id = Member.search_by_name_like(db, key_word)
                 print_members(check_member_id)
             else:
@@ -233,7 +237,6 @@ def main():
         elif choice == "11": 
             member_id = get_safe_int_input("ID thành viên: ")
             
-
             keyword = get_string_input("Nhập từ khóa tên sách cần mượn: ")
             available_books = Book.search_available_by_title_like(db, keyword)
             
@@ -299,6 +302,39 @@ def main():
                 for member_id, name, book_id, title, borrow_date, due_date, days in rows:
                     print(f"- TV [{member_id}] {name} | Sách [{book_id}] {title} | Mượn {borrow_date} | Hạn {due_date} | Trễ {days} ngày")
 
+        elif choice == "14":
+            member_id = get_safe_int_input("Nhập ID thành viên: ")
+            check_member_id = Member.search_by_id(db,member_id)
+            if not check_member_id:
+                print("Lỗi: Không thấy thành viên.")
+                continue
+
+            history = Borrowing.get_history_by_member(db,member_id)
+            if not history:
+                print(f"Thành viên[{member_id}] {check_member_id.name} chưa mượn sách nào ")
+            else:
+                print(f"== Lịch sử mượn của TV [{member_id}] {check_member_id.name} ==")
+                for title,author,borrow_date,due_date,return_date in history:
+                    if return_date:
+                        status = f"Đã trả: {return_date}"
+                    else:
+                        status = f"Đang mượn (Hạn: {due_date})"
+                    
+                    print(f"- Sách: {title} - {author}")
+                    print(f"  Ngày mượn: {borrow_date} | {status}")
+            
+        elif choice == "15": # Đổi từ 16 sang 15
+            borrowed_books = Borrowing.get_all_currently_borrowed(db)
+            if not borrowed_books:
+                print("Không có sách nào đang được mượn.")
+            else:
+                print("== DANH SÁCH TẤT CẢ SÁCH ĐANG ĐƯỢC MƯỢN ==")
+                for name, title, borrow_date, due_date in borrowed_books:
+                    print(f"- Sách: {title}")
+                    print(f"  Người mượn: {name}")
+                    print(f"  Mượn từ: {borrow_date} | Hạn trả: {due_date}")
+        
+            
         elif choice == "0":
             print("Tạm biệt")
             break
