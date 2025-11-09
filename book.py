@@ -26,17 +26,17 @@ class Book:
 
     # DELETE
     def delete_book(self, db):
-        checK_query = "SELECT FROM books WHERE book_id=%s"
-        row = db.fetch_one(checK_query, (self.book_id,))
+        check_query = "SELECT status FROM books WHERE book_id = %s"
+        row = db.fetch_one(check_query, (self.book_id,))
         
         if not row:
-            raise ValueError("Sách không tồn tại để xóa")
+            raise ValueError("Sách không tồn tại để xóa.")
         
         if row[0] == 1:
             raise ValueError("Không thể xóa. Sách này đang được mượn.")
-        
-        query = "DELETE FROM books WHERE book_id = %s"
-        db.execute_query(query,(self.book_id,))
+
+        query = "DELETE FROM books WHERE book_id=%s"
+        db.execute_query(query, (self.book_id,))
         
     # READ / SEARCH
     @staticmethod
