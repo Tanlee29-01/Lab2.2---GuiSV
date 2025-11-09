@@ -74,3 +74,29 @@ class Borrowing:
             WHERE bo.member_id = %s AND bo.return_date IS NULL
         """
         return db.fetch_all(query, (member_id,))
+    
+    @staticmethod
+    def get_history_by_member(db,member_id):
+        query = """
+            SELECT b.title, b.author, bo.borrow_date, bo.due_date, bo.return_date
+            FROM borrowing bo
+            JOIN books b ON b.book_id = bo.book_id
+            WHERE bo.member_id = %s
+            ORDER BY bo.borrow_date DESC
+        """
+        return db.fetch_all(query, (member_id,))
+    
+    @staticmethod
+    def get_all_currently_borrowed(db):
+        """
+        Lấy TẤT CẢ sách đang được mượn (chưa trả)
+        """
+        query = """
+            SELECT m.name, b.title, bo.borrow_date, bo.due_date
+            FROM borrowing bo
+            JOIN books b ON b.book_id = bo.book_id
+            JOIN members m ON m.member_id = bo.member_id
+            WHERE bo.return_date IS NULL
+            ORDER BY bo.due_date ASC
+        """
+        return db.fetch_all(query)
