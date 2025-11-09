@@ -5,8 +5,8 @@ class Database:
         self.connection = mysql.connector.connect(
             host="127.0.0.1", 
             user="root", 
-            password="29012006TanLee!", 
-            database="Library"
+            password="LuuNhutTan120206@", 
+            database="library_management"
         )
         self.cursor = self.connection.cursor()
 
