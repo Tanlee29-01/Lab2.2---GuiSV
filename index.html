@@ -10,51 +10,41 @@
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Header Section -->
-    <header class="header">
-        <div class="header-left">
-            <h1 class="library-title">Library</h1>
-        </div>
-        <div class="header-right">
-            <div class="search-container">
-                <input type="text" class="search-input" placeholder="Tìm kiếm sách">
-                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-            </div>
-            <button class="add-book-btn">+ Thêm Sách</button>
-            <div class="user-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-            </div>
+    <header class="top-bar">
+        <h1>Library Dashboard</h1>
+        <div class="actions">
+            <input type="text" id="searchInput" placeholder="Tìm kiếm sách">
+            <button id="addBookBtn">+ Thêm Sách</button>
+            <button id="addMemberBtn">+ Thêm Thành viên</button>
+            <button id="borrowBtn">Mượn Sách</button>
+            <button id="returnBtn">Trả Sách</button>
         </div>
     </header>
 
-    <!-- Statistical Buttons -->
-    <div class="stats-container">
-        <button class="stat-btn">Tổng sách</button>
-        <button class="stat-btn">Số Thành viên</button>
-        <button class="stat-btn">Đang mượn</button>
-        <button class="stat-btn">Trễ hạn</button>
-    </div>
+    <section class="stats-grid">
+        <div class="stat-card">
+            <span>Tổng sách</span>
+            <strong id="totalBooks">0</strong>
+        </div>
+        <div class="stat-card">
+            <span>Số thành viên</span>
+            <strong id="totalMembers">0</strong>
+        </div>
+        <div class="stat-card">
+            <span>Đang mượn</span>
+            <strong id="borrowingCount">0</strong>
+        </div>
+        <div class="stat-card">
+            <span>Trễ hạn</span>
+            <strong id="overdueCount">0</strong>
+        </div>
+    </section>
 
-    <!-- Main Content Grid -->
-    <div class="content-grid">
-        <!-- Top Left: Recently Borrowed Books -->
-        <div class="content-block">
-            <div class="block-header">
-                <h2 class="block-title">Sách mượn gần đây</h2>
-                <div class="menu-dots">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
-            <div class="table-container">
-                <table class="data-table">
+    <main class="grid">
+        <section class="panel">
+            <h2>Sách mượn gần đây</h2>
+            <div class="table-wrapper">
+                <table>
                     <thead>
                         <tr>
                             <th>Mã phiếu</th>
@@ -63,25 +53,15 @@
                             <th>Ngày mượn</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Data will be populated here -->
-                    </tbody>
+                    <tbody id="recentBorrowingsBody"></tbody>
                 </table>
             </div>
-        </div>
+        </section>
 
-        <!-- Top Right: Upcoming Due Dates -->
-        <div class="content-block">
-            <div class="block-header">
-                <h2 class="block-title">Sắp đến hạn</h2>
-                <div class="menu-dots">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
-            <div class="table-container">
-                <table class="data-table">
+        <section class="panel">
+            <h2>Sắp đến hạn</h2>
+            <div class="table-wrapper">
+                <table>
                     <thead>
                         <tr>
                             <th>Mã</th>
@@ -89,52 +69,33 @@
                             <th>Trạng thái</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Data will be populated here -->
-                    </tbody>
+                    <tbody id="dueSoonBody"></tbody>
                 </table>
             </div>
-        </div>
+        </section>
 
-        <!-- Bottom Left: Books -->
-        <div class="content-block">
-            <div class="block-header">
-                <h2 class="block-title">sách</h2>
-                <div class="menu-dots">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
-            <div class="table-container">
-                <table class="data-table">
+        <section class="panel">
+            <h2>Sách</h2>
+            <div class="table-wrapper">
+                <table>
                     <thead>
                         <tr>
-                            <th>Mã Sách</th>
-                            <th>Tác Giả</th>
-                            <th>Thể Loại</th>
-                            <th>SL</th>
+                            <th>Mã sách</th>
+                            <th>Tên sách</th>
+                            <th>Tác giả</th>
+                            <th>Thể loại</th>
+                            <th>Trạng thái</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Data will be populated here -->
-                    </tbody>
+                    <tbody id="booksBody"></tbody>
                 </table>
             </div>
-        </div>
+        </section>
 
-        <!-- Bottom Right: Members -->
-        <div class="content-block">
-            <div class="block-header">
-                <h2 class="block-title">Thành viên</h2>
-                <div class="menu-dots">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
-            <div class="table-container">
-                <table class="data-table">
+        <section class="panel">
+            <h2>Thành viên</h2>
+            <div class="table-wrapper">
+                <table>
                     <thead>
                         <tr>
                             <th>Mã TV</th>
@@ -143,13 +104,12 @@
                             <th>Trạng thái</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Data will be populated here -->
-                    </tbody>
+                    <tbody id="membersBody"></tbody>
                 </table>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
+    <script src="app.js"></script>
 </body>
 </html>
 
