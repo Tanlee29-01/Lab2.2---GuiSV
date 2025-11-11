@@ -65,7 +65,17 @@ function initEventListeners() {
     }
 }
 
+let serverConnectionErrorShown = false;
+
+function showServerError(message) {
+    if (!serverConnectionErrorShown) {
+        serverConnectionErrorShown = true;
+        alert(`⚠️ Lỗi kết nối: ${message}\n\nVui lòng đảm bảo backend server đang chạy:\npython api.py`);
+    }
+}
+
 function refreshDashboard() {
+    serverConnectionErrorShown = false;
     Promise.all([
         loadStats(),
         loadRecentBorrowings(),
@@ -115,6 +125,15 @@ async function fetchJSON(path, options = {}) {
         }
 
         return response.json();
+    } catch (error) {
+        // Xử lý lỗi network hoặc timeout
+        if (error.name === 'AbortError') {
+            throw new Error('Yêu cầu quá thời gian chờ. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau.');
+        }
+        if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+            throw new Error('Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy tại http://127.0.0.1:5000');
+        }
+        throw error;
     } finally {
         clearTimeout(timeoutId);
     }
@@ -129,6 +148,9 @@ async function loadStats() {
         updateStatCards(stats);
     } catch (error) {
         console.error('Lỗi khi tải thống kê:', error);
+        if (error.message && error.message.includes('Không thể kết nối đến server')) {
+            showServerError(error.message);
+        }
     }
 }
 
