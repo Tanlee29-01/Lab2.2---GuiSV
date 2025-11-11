@@ -1,15 +1,18 @@
 class Member:
-    def __init__(self, member_id, name):
+    def __init__(self, member_id, name,mail=None,status=None):
         self.member_id = member_id
         self.name = name
+        self.mail = mail
+        self.status = status
+
 
     def __str__(self):
         return f"[{self.member_id}] {self.name}"
 
     # CREATE
     def add_member(self, db):
-        query = "INSERT INTO members(name) VALUES(%s)"
-        db.execute_query(query, (self.name,))
+        query = "INSERT INTO members(name, email) VALUES(%s, %s)"
+        db.execute_query(query, (self.name, self.mail))
 
     # UPDATE
     def update_member_info(self, db):
@@ -49,3 +52,15 @@ class Member:
         query = "SELECT * FROM members WHERE name LIKE %s"
         rows = db.fetch_all(query, (f"%{keyword}%",))
         return [Member(*r) for r in rows]
+
+    #Add mail
+    @staticmethod
+    def add_mail(db, member_id, mail):
+        query = "UPDATE members SET mail=%s WHERE member_id=%s"
+        db.execute_query(query, (mail, member_id))
+    
+    #Status
+    @staticmethod
+    def set_status(db, member_id, status):
+        query = "UPDATE members SET status=%s WHERE member_id=%s"
+        db.execute_query(query, (status, member_id))

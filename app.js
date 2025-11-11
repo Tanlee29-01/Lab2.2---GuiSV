@@ -294,10 +294,14 @@ async function onAddMemberClick() {
     if (!name || !name.trim()) {
         return;
     }
+    const email = prompt('Email thành viên mới:');
+    if (!email || !email.trim()) {
+        return;
+    }
     try {
         await fetchJSON('/members', {
             method: 'POST',
-            body: JSON.stringify({ name: name.trim() })
+            body: JSON.stringify({ name: name.trim(), email: email.trim() })
         });
         alert('Đã thêm thành viên mới.');
         await loadMembers();

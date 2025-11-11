@@ -19,7 +19,9 @@ CREATE TABLE books (
 -- Bảng thành viên
 CREATE TABLE members (
     member_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    Trang_thai VARCHAR(255) NOT NULL
 );
 
 -- Bảng mượn sách

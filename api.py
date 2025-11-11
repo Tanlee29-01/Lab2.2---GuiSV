@@ -33,7 +33,8 @@ def member_to_dict(member: Member):
     return {
         "memberId": member.member_id,
         "name": member.name,
-    }
+        "email": member.mail,
+    }   
 
 
 @app.route("/api/stats/overview", methods=["GET"])
@@ -41,8 +42,7 @@ def stats_overview():
     db = get_db()
     total_books = db.fetch_one("SELECT COUNT(*) FROM books")[0]
     total_members = db.fetch_one("SELECT COUNT(*) FROM members")[0]
-    borrowing_count = db.fetch_one(
-        "SELECT COUNT(*) FROM borrowing WHERE return_date IS NULL"
+    borrowing_count = db.fetch_one("SELECT COUNT(*) FROM borrowing WHERE return_date IS NULL"
     )[0]
     overdue_count = db.fetch_one(
         """
@@ -86,7 +86,7 @@ def borrowings_recent():
                 "ticketCode": borrowing_id,
                 "memberName": member_name,
                 "bookTitle": title,
-                "borrowDate": borrow_date.isoformat(),
+                "borrowDate": borrow_date.isoformat() if borrow_date else None,
             }
         )
     return jsonify(data)
@@ -172,17 +172,28 @@ def members():
     if request.method == "POST":
         payload = request.get_json(force=True)
         name = (payload.get("name") or "").strip()
+        email = (payload.get("email") or "").strip()
         if not name:
             return jsonify({"error": "Thiếu tên thành viên."}), 400
-        Member(None, name).add_member(db)
+        if not email:
+            return jsonify({"error": "Thiếu email thành viên."}), 400
+        Member(None, name, email).add_member(db)
         return jsonify({"message": "Đã thêm thành viên."}), 201
 
-    members = Member.get_all_members(db)
+    all_members = Member.get_all_members(db)
+    
+    # Lấy danh sách ID của các thành viên đang mượn sách (return_date IS NULL)
+    borrowing_members_rows = db.fetch_all(
+        "SELECT DISTINCT member_id FROM borrowing WHERE return_date IS NULL"
+    )
+    # Chuyển thành một set để tra cứu nhanh hơn
+    borrowing_member_ids = {row[0] for row in borrowing_members_rows}
+
     data = []
-    for member in members:
+    for member in all_members:
         info = member_to_dict(member)
-        info["email"] = ""
-        info["status"] = ""
+        # Kiểm tra xem member_id có trong set các thành viên đang mượn không
+        info["status"] = "Đang mượn" if member.member_id in borrowing_member_ids else "Hoạt động"
         data.append(info)
     return jsonify(data)
 
@@ -230,4 +241,3 @@ def return_book():
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=False)
-

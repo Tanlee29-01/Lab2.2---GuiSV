@@ -190,7 +190,10 @@ def main():
 
         elif choice == "6":
             name = get_string_input("Tên thành viên: ").strip()
-            Member(None, name).add_member(db)
+            email = get_string_input("Email: ").strip()
+            status = get_string_input("Trạng thái: ").strip()
+
+            Member(None, name, email, status).add_member(db)
             print("Đã thêm thành viên.")
 
         elif choice == "7":
